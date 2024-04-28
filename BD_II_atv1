@@ -1,0 +1,42 @@
+CREATE TABLE serie (
+  id SERIAL PRIMARY KEY,
+  nome_serie VARCHAR(50) NOT NULL,
+  lancamento INT NOT NULL
+);
+
+CREATE TABLE ator (
+  id SERIAL PRIMARY KEY,
+  fk_id_serie INT NOT NULL,
+  primeiro_nome VARCHAR(30) NOT NULL,
+  sobrenome VARCHAR (30) NOT NULL,
+  ano_nascimento int NOT NULL,
+  CONSTRAINT fk_serie FOREIGN KEY (fk_id_serie) REFERENCES serie(id)
+);
+
+INSERT INTO serie (nome_serie, lancamento) VALUES
+  ('The Walking Dead', 2010),
+  ('Once Upon a Time', 2012),
+  ('Dark', 2017),
+  ('The Crown', 2016),
+  ('The Big Bang Theory', 2007);
+  
+  INSERT INTO ator (fk_id_serie, primeiro_nome, sobrenome, ano_nascimento) VALUES
+  (2,'Ginnifer', 'Goodwin', 1978),
+  (2,'Josh', 'Dallas', 1978),
+  (1,'Lauren', 'Cohan', 1982),
+  (3, 'Louis', 'Hofmann', 1997),
+  (4, 'Claire', 'Foy', 1984),
+  (4, 'Vanessa', 'Kirby', 1988),
+  (5, 'Jim', 'Parsons', 1973),
+  (5, 'Kaley', 'Cuoco', 1985);
+  
+select * from ator
+
+SELECT serie.*, ator.primeiro_nome AS nome_ator
+FROM serie
+INNER JOIN ator ON ator.fk_id_serie = serie.ID;
+
+
+SELECT * FROM ator
+RIGHT JOIN serie
+ON ator.fk_id_serie = serie.ID;
