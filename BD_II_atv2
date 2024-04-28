@@ -1,0 +1,60 @@
+CREATE TABLE produto(
+  ID serial PRIMARY KEY,
+  nome VARCHAR (16) NOT NULL UNIQUE,
+  preco FLOAT NOT NULL
+);
+
+INSERT INTO produto (nome, preco) VALUES
+('Bicicleta', 789.50),
+('Patins', 234.50),
+('Scooter', 450.00)
+
+SELECT * FROM produto
+
+CREATE OR REPLACE FUNCTION aplicar_descontos (preco FLOAT, desconto FLOAT)
+	RETURNS FLOAT as $$
+    BEGIN
+    	RETURN preco * (1 - desconto);
+   	end
+    $$ LANGUAGE plpgsql
+    
+SELECT aplicar_descontos (500, 0.1)
+
+SELECT nome, preco, aplicar_descontos (preco, 0.5) as preco_com_desconto from produto
+
+CREATE OR REPLACE FUNCTION aplicar_aumento (preco FLOAT, aumento FLOAT)
+	RETURNS FLOAT as $$
+    BEGIN
+    	RETURN preco * (1 + aumento);
+   	end
+    $$ LANGUAGE plpgsql
+    
+ SELECT aplicar_aumento (500, 0.1)
+ 
+ SELECT nome, preco, aplicar_aumento (preco, 1) as preco_com_aumento from produto
+ 
+ CREATE TABLE logs (
+   id serial primary key,
+   nome VARCHAR (16) not NULL,
+   hora TIMESTAMP,
+   fk_id_produto int not NULL,
+   CONSTRAINT fk_logs FOREIGN key (fk_id_produto) REFERENCES produto(id)
+   );
+
+CREATE or REPLACE FUNCTION inserir_logs()
+	RETURNS TRIGGER AS $$
+    BEGIN
+    	INSERT INTO logs (nome, hora, fk_id_produto)
+        VALUES
+        (new.nome, now(), NEW.id);
+        RETURN NULL;
+    END
+    $$ LANGUAGE plpgsql
+    
+ CREATE TRIGGER inserir_logs
+ AFTER INSERT on produto
+ for each row
+ EXECUTE FUNCTION inserir_logs()
+
+ 
+ 
