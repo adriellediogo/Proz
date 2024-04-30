@@ -67,3 +67,6 @@ $$ Language plpgsql;
 call alterarEstoque( 1, 30)
 
 SELECT * from estoque
+
+call alterarEstoque( 4, 3)
+
