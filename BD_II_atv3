@@ -1,0 +1,45 @@
+CREATE TABLE cliente (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(50) NOT NULL,
+    sobrenome VARCHAR(50) NOT NULL,
+    data_cadastro DATE NOT NULL
+);
+
+INSERT into cliente (nome, sobrenome, data_cadastro) VALUES
+('Adrielle', 'Diogo', '2024-04-30'),
+('Diogo', 'Adrielle', '2024-04-29'),
+('Adri', 'Diogo', '2024-04-30')
+
+SELECT * from cliente
+
+CREATE TABLE produto (
+    ID SERIAL PRIMARY KEY,
+    produto VARCHAR(50) NOT NULL,
+    valor FLOAT NOT NULL
+);
+
+CREATE TABLE vendas (
+  ID SERIAL PRIMARY KEY,
+  fk_id_cliente int NOT NULL,
+  fk_id_produto int NOT NULL,
+  data_venda DATE NOT NULL,
+  CONSTRAINT fk_cliente FOREIGN KEY (fk_id_cliente) REFERENCES cliente(id),
+  CONSTRAINT fk_produto FOREIGN KEY (fk_id_produto) REFERENCES produto(id)	
+);
+
+create or replace function verCliente (data_pesquisa DATE)
+returns INTEGER as $$
+DECLARE
+	total_clientes INT;
+BEGIN
+
+select COUNT(*) into total_clientes 
+from cliente
+where date(data_cadastro) = data_pesquisa;
+
+return total_clientes;
+end;
+$$ language plpgsql
+
+SELECT verCliente('2024-04-29') AS total_clientes_cadastrados;
+
