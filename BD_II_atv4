@@ -1,0 +1,69 @@
+CREATE TABLE produto (
+  id SERIAL PRIMARY KEY,
+  nome_produto VARCHAR (50) NOT NULL,
+  valor_produto FLOAT NOT NULL
+);
+
+CREATE TABLE estoque (
+  ID SERIAL PRIMARY KEY,
+  fk_id_produto int NOT NULL,
+  quantidade int not NULL,
+  CONSTRAINT fk_produto FOREIGN KEY (fk_id_produto) REFERENCES produto(id)	
+);
+
+INSERT into produto (nome_produto, valor_produto) values 
+('Arroz', 3.70),
+('feijão', 6.99),
+('Macarrão', 2.60),
+('Açúcar', 4.00)
+
+SELECT * from estoque
+
+
+INSERT into estoque (fk_id_produto, quantidade) values 
+(1,100),
+(2,30),
+(3,20),
+(4,5)
+
+SELECT * FROM estoque
+RIGHT JOIN produto
+ON estoque.fk_id_produto = produto.ID;
+
+SELECT * FROM produto
+INNER JOIN estoque
+ON estoque.fk_id_produto = produto.ID;
+
+CREATE or replace PROCEDURE verEstoque()
+as $$
+BEGIN
+    perform  *  FROM estoque;
+END;
+$$ language PLPGSQL;
+
+CREATE function funcAlterarEstoque()
+returns trigger 
+as $$
+BEGIN
+	call verEstoque();
+    return new;
+   end ;
+ $$ language PLPGSQL;
+ 
+CREATE trigger alterar_tab_estoque
+    after insert on estoque
+    for each ROW
+    execute function funcAlterarEstoque();
+
+create or replace procedure alterarEstoque (produto INT, produtosVendidos INT)
+as $$ 
+BEGIN
+	update estoque 
+    set quantidade = 	quantidade - produtosVendidos
+	where id = produto;
+end ;
+$$ Language plpgsql;
+
+call alterarEstoque( 1, 30)
+
+SELECT * from estoque
